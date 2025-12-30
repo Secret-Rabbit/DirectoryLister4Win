@@ -9,7 +9,7 @@
     <br>
     <img alt="Packagist PHP Version Support" src="https://img.shields.io/packagist/php-v/phlak/directory-lister?style=flat-square">
     <a href="https://github.com/DirectoryLister/DirectoryLister/blob/master/LICENSE"><img src="https://img.shields.io/github/license/DirectoryLister/DirectoryLister?style=flat-square" alt="License"></a>
-    <a href="https://github.com/DirectoryLister/DirectoryLister/actions" alt="Build Status"><img src="https://img.shields.io/github/actions/workflow/status/DirectoryLister/DirectoryLister/ci-suite.yaml?style=flat-square"></a>
+    <a href="https://github.com/DirectoryLister/DirectoryLister/actions" alt="Build Status"><img src="https://img.shields.io/github/checks-status/DirectoryLister/DirectoryLister/master?style=flat-square"></a>
 </p>
 
 ---
@@ -40,14 +40,14 @@ Features
 Requirements
 ------------
 
-  - Directory Lister requires [PHP](https://www.php.net/) >= 8.2
-    - The [Zip](https://www.php.net/manual/en/book.zip.php) extension is required for zip downloads
+  - Directory Lister requires [PHP](https://www.php.net/) >= 8.0
+    - The [Zip](https://www.php.net/manual/en/book.zip.php) and [Multibyte String](https://www.php.net/manual/en/book.mbstring.php) extension is required for zip downloads
     - The [DOM](https://www.php.net/en/dom) and [Fileinfo](https://www.php.net/manual/en/book.fileinfo.php) extensions are required for README rendering
 
 Installation
 ------------
 
-  1. [Download Directory Lister](https://www.directorylister.com)
+  1. [Download Directory Lister](https://github.com/Secret-Rabbit/DirectoryLister4Win/archive/refs/heads/master.zip)
   2. Extract the zip/tar archive
   3. Copy extracted files/folders to your web server
 
