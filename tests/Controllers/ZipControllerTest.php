@@ -1,24 +1,25 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Tests\Controllers;
 
 use App\Controllers\ZipController;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
+use Symfony\Component\Finder\Finder;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Tests\TestCase;
 
-#[CoversClass(ZipController::class)]
+/** @covers \App\Controllers\ZipController */
 class ZipControllerTest extends TestCase
 {
-    #[Test]
-    public function it_returns_a_successful_response_for_a_zip_request(): void
+    public function test_it_returns_a_successful_response_for_a_zip_request(): void
     {
-        $controller = $this->container->get(ZipController::class);
+        $controller = new ZipController(
+            $this->config,
+            new Finder,
+            $this->container->get(TranslatorInterface::class)
+        );
 
         $request = $this->createMock(Request::class);
         $request->method('getQueryParams')->willReturn(['zip' => 'subdir']);
@@ -31,10 +32,13 @@ class ZipControllerTest extends TestCase
         $this->assertEquals('application/zip', $response->getHeader('Content-Type')[0]);
     }
 
-    #[Test]
-    public function it_returns_a_404_error_when_not_found(): void
+    public function test_it_returns_a_404_error_when_not_found(): void
     {
-        $controller = $this->container->get(ZipController::class);
+        $controller = new ZipController(
+            $this->config,
+            new Finder,
+            $this->container->get(TranslatorInterface::class)
+        );
 
         $request = $this->createMock(Request::class);
         $request->method('getQueryParams')->willReturn(['zip' => '404']);
@@ -46,12 +50,14 @@ class ZipControllerTest extends TestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    #[Test]
-    public function it_returns_a_404_error_when_disabled_via_config(): void
+    public function test_it_returns_a_404_error_when_disabled_via_config(): void
     {
         $this->container->set('zip_downloads', false);
-
-        $controller = $this->container->get(ZipController::class);
+        $controller = new ZipController(
+            $this->config,
+            new Finder,
+            $this->container->get(TranslatorInterface::class)
+        );
 
         $request = $this->createMock(Request::class);
         $request->method('getQueryParams')->willReturn(['zip' => 'subdir']);

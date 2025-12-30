@@ -1,13 +1,9 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Tests\Middlewares;
 
 use App\Middlewares\CacheControlMiddleware;
 use Fig\Http\Message\StatusCodeInterface;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -15,7 +11,7 @@ use Slim\Psr7\Headers;
 use Slim\Psr7\Response;
 use Tests\TestCase;
 
-#[CoversClass(CacheControlMiddleware::class)]
+/** @covers \App\Middlewares\CacheControlMiddleware */
 class CacheControlMiddlewareTest extends TestCase
 {
     /** @var ServerRequestInterface&MockObject */
@@ -32,8 +28,7 @@ class CacheControlMiddlewareTest extends TestCase
         $this->handler = $this->createMock(RequestHandlerInterface::class);
     }
 
-    #[Test]
-    public function it_adds_a_response_cache_header_with_age_of_zero_by_defualt(): void
+    public function test_it_adds_a_response_cache_header_with_age_of_zero_by_defualt(): void
     {
         $this->handler->expects($this->once())->method('handle')->willReturn(
             new Response(StatusCodeInterface::STATUS_OK, new Headers([
@@ -41,13 +36,12 @@ class CacheControlMiddlewareTest extends TestCase
             ]))
         );
 
-        $response = $this->container->call(CacheControlMiddleware::class, [$this->request, $this->handler]);
+        $response = (new CacheControlMiddleware($this->config))($this->request, $this->handler);
 
         $this->assertEquals(['max-age=0, private, must-revalidate'], $response->getHeader('Cache-Control'));
     }
 
-    #[Test]
-    public function it_adds_a_response_cache_header_for_a_pre_configured_http_cache_option(): void
+    public function test_it_adds_a_response_cache_header_for_a_pre_configured_http_cache_option(): void
     {
         $this->handler->expects($this->once())->method('handle')->willReturn(
             new Response(StatusCodeInterface::STATUS_OK, new Headers([
@@ -55,7 +49,7 @@ class CacheControlMiddlewareTest extends TestCase
             ]))
         );
 
-        $response = $this->container->call(CacheControlMiddleware::class, [$this->request, $this->handler]);
+        $response = (new CacheControlMiddleware($this->config))($this->request, $this->handler);
 
         $this->assertEquals(['max-age=300, private, must-revalidate'], $response->getHeader('Cache-Control'));
     }

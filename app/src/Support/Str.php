@@ -1,17 +1,13 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Support;
 
-use Illuminate\Support\Collection;
+use Tightenco\Collect\Support\Collection;
 
 class Str
 {
     /**
      * Explode a string by a string into a collection.
-     *
-     * @param non-empty-string $delimiter
      *
      * @return Collection<int, string>
      */

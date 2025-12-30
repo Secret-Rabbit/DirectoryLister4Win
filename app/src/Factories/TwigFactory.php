@@ -1,70 +1,42 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Factories;
 
-use App\Filters\ViewFilter;
-use App\Functions\ViewFunction;
-use DI\Attribute\Inject;
-use DI\Container;
+use App\Config;
+use App\ViewFunctions\ViewFunction;
+use Invoker\CallableResolver;
 use Slim\Views\Twig;
 use Twig\Extension\CoreExtension;
 use Twig\Loader\FilesystemLoader;
-use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 class TwigFactory
 {
-    #[Inject('views_path')]
-    private string $viewsPath;
-
-    #[Inject('view_cache')]
-    private string $viewCache;
-
-    #[Inject('date_format')]
-    private string $dateFormat;
-
-    #[Inject('timezone')]
-    private string $timezone;
-
-    #[Inject('view_filters')]
-    private array $viewFilters;
-
-    #[Inject('view_functions')]
-    private array $viewFunctions;
-
+    /** Create a new TwigFactory object. */
     public function __construct(
-        private Container $container,
+        private Config $config,
+        private CallableResolver $callableResolver
     ) {}
 
+    /** Initialize and return the Twig component. */
     public function __invoke(): Twig
     {
-        $twig = new Twig(new FilesystemLoader($this->viewsPath), [
-            'cache' => strtolower($this->viewCache) === 'false' ? false : $this->viewCache,
-        ]);
+        $twig = new Twig(new FilesystemLoader(
+            $this->config->get('views_path')
+        ), ['cache' => $this->config->get('view_cache')]);
 
         /** @var CoreExtension $core */
         $core = $twig->getEnvironment()->getExtension(CoreExtension::class);
 
-        $core->setDateFormat($this->dateFormat, '%d days');
-        $core->setTimezone($this->timezone);
+        $core->setDateFormat($this->config->get('date_format'), '%d days');
+        $core->setTimezone($this->config->get('timezone'));
 
-        foreach ($this->viewFilters as $class) {
-            /** @var ViewFilter $filter */
-            $filter = $this->container->get($class);
-
-            $twig->getEnvironment()->addFilter(
-                new TwigFilter($filter->name, $filter)
-            );
-        }
-
-        foreach ($this->viewFunctions as $class) {
-            /** @var ViewFunction $function */
-            $function = $this->container->get($class);
+        foreach ($this->config->get('view_functions') as $function) {
+            /** @var ViewFunction&callable $function */
+            $function = $this->callableResolver->resolve($function);
 
             $twig->getEnvironment()->addFunction(
-                new TwigFunction($function->name, $function)
+                new TwigFunction($function->name(), $function)
             );
         }
 

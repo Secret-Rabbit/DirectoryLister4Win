@@ -1,25 +1,20 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Tests\Factories;
 
 use App\Exceptions\InvalidConfiguration;
 use App\Factories\TranslationFactory;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\Translator;
 use Tests\TestCase;
 
-#[CoversClass(TranslationFactory::class)]
+/** @covers \App\Factories\TranslationFactory */
 class TranslationFactoryTest extends TestCase
 {
-    #[Test]
-    public function it_registers_the_translation_component(): void
+    public function test_it_registers_the_translation_component(): void
     {
         /** @var Translator $translator */
-        $translator = $this->container->call(TranslationFactory::class);
+        $translator = (new TranslationFactory($this->config, $this->cache))();
 
         $this->assertEquals('en', $translator->getLocale());
         $this->assertInstanceOf(MessageCatalogue::class, $translator->getCatalogue('ar'));
@@ -45,13 +40,11 @@ class TranslationFactoryTest extends TestCase
         $this->assertInstanceOf(MessageCatalogue::class, $translator->getCatalogue('zh-TW'));
     }
 
-    #[Test]
-    public function it_throws_an_exception_for_an_invalid_language(): void
+    public function test_it_throws_an_exception_for_an_invalid_language(): void
     {
         $this->expectException(InvalidConfiguration::class);
 
         $this->container->set('language', 'xx');
-
-        $this->container->call(TranslationFactory::class);
+        (new TranslationFactory($this->config, $this->cache))();
     }
 }

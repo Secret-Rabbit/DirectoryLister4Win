@@ -1,24 +1,24 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Tests\Factories;
 
 use App\Exceptions\InvalidConfiguration;
 use App\Factories\FinderFactory;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\Test;
+use App\HiddenFiles;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Tests\TestCase;
 
-#[CoversClass(FinderFactory::class)]
+/** @covers \App\Factories\FinderFactory */
 class FinderFactoryTest extends TestCase
 {
-    #[Test]
-    public function it_can_compose_the_finder_component(): void
+    public function test_it_can_compose_the_finder_component(): void
     {
-        $finder = $this->container->call(FinderFactory::class);
+        $finder = (new FinderFactory(
+            $this->container,
+            $this->config,
+            HiddenFiles::fromConfig($this->config)
+        ))();
 
         $this->assertInstanceOf(Finder::class, $finder);
 
@@ -33,15 +33,19 @@ class FinderFactoryTest extends TestCase
         ], $this->getFilesArray($finder));
     }
 
-    #[Test]
-    public function it_can_sort_by_a_user_provided_closure(): void
+    public function test_it_can_sort_by_a_user_provided_closure(): void
     {
         $this->container->set('sort_order', \DI\value(
-            static fn (SplFileInfo $file1, SplFileInfo $file2) => $file1->getSize() <=> $file2->getSize()
+            static function (SplFileInfo $file1, SplFileInfo $file2) {
+                return $file1->getSize() <=> $file2->getSize();
+            }
         ));
 
-        $finder = $this->container->call(FinderFactory::class);
-
+        $finder = (new FinderFactory(
+            $this->container,
+            $this->config,
+            HiddenFiles::fromConfig($this->config)
+        ))();
         $finder->in($this->filePath('subdir'))->depth(0);
 
         $this->assertEquals([
@@ -53,13 +57,15 @@ class FinderFactoryTest extends TestCase
         ], $this->getFilesArray($finder));
     }
 
-    #[Test]
-    public function it_can_reverse_the_sort_order(): void
+    public function test_it_can_reverse_the_sort_order(): void
     {
         $this->container->set('reverse_sort', true);
 
-        $finder = $this->container->call(FinderFactory::class);
-
+        $finder = (new FinderFactory(
+            $this->container,
+            $this->config,
+            HiddenFiles::fromConfig($this->config)
+        ))();
         $finder->in($this->filePath('subdir'))->depth(0);
 
         $this->assertEquals([
@@ -71,15 +77,17 @@ class FinderFactoryTest extends TestCase
         ], $this->getFilesArray($finder));
     }
 
-    #[Test]
-    public function it_does_not_return_hidden_files(): void
+    public function test_it_does_not_return_hidden_files(): void
     {
         $this->container->set('hidden_files', [
             'subdir/alpha.scss', 'subdir/charlie.bash', '**/*.yaml',
         ]);
 
-        $finder = $this->container->call(FinderFactory::class);
-
+        $finder = (new FinderFactory(
+            $this->container,
+            $this->config,
+            HiddenFiles::fromConfig($this->config)
+        ))();
         $finder->in($this->filePath('subdir'))->depth(0);
 
         $this->assertInstanceOf(Finder::class, $finder);
@@ -94,8 +102,11 @@ class FinderFactoryTest extends TestCase
         $this->container->set('hidden_files', []);
         $this->container->set('hide_dot_files', false);
 
-        $finder = $this->container->call(FinderFactory::class);
-
+        $finder = (new FinderFactory(
+            $this->container,
+            $this->config,
+            HiddenFiles::fromConfig($this->config)
+        ))();
         $finder->in($this->filePath('subdir'))->depth(0);
 
         $this->assertInstanceOf(Finder::class, $finder);
@@ -114,30 +125,35 @@ class FinderFactoryTest extends TestCase
         $this->container->set('hidden_files', []);
         $this->container->set('hide_dot_files', false);
 
-        $finder = $this->container->call(FinderFactory::class);
-
+        $finder = (new FinderFactory(
+            $this->container,
+            $this->config,
+            HiddenFiles::fromConfig($this->config)
+        ))();
         $finder->in($this->filePath('subdir/.dot_dir'))->depth(0);
 
         $this->assertInstanceOf(Finder::class, $finder);
         $this->assertEquals(['.dot_file'], $this->getFilesArray($finder));
     }
 
-    #[Test]
-    public function it_throws_a_runtime_exception_with_an_invalid_sort_order(): void
+    public function test_it_throws_a_runtime_exception_with_an_invalid_sort_order(): void
     {
         $this->container->set('sort_order', 'invalid');
 
         $this->expectException(InvalidConfiguration::class);
 
-        $this->container->call(FinderFactory::class);
+        (new FinderFactory(
+            $this->container,
+            $this->config,
+            HiddenFiles::fromConfig($this->config)
+        ))();
     }
 
-    private function getFilesArray(Finder $finder): array
+    protected function getFilesArray(Finder $finder): array
     {
-        $files = array_map(
-            static fn (SplFileInfo $file): string => $file->getFilename(),
-            iterator_to_array($finder)
-        );
+        $files = array_map(static function (SplFileInfo $file) {
+            return $file->getFilename();
+        }, iterator_to_array($finder));
 
         return array_values($files);
     }

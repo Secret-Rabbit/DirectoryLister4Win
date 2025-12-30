@@ -1,21 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Tests;
 
 use App\HiddenFiles;
 use BadMethodCallException;
-use Illuminate\Support\Collection;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\Test;
+use Tightenco\Collect\Support\Collection;
 
-#[CoversClass(HiddenFiles::class)]
+/** @covers \App\HiddenFiles */
 class HiddenFilesTest extends TestCase
 {
-    #[DataProvider('hiddenFilesProvider')]
-    public function it_creates_a_collection_of_hidden_files(
+    /** @dataProvider hiddenFilesProvider */
+    public function test_it_creates_a_collection_of_hidden_files(
         array $hiddenFilesArray,
         string $hiddenFilesList,
         bool $hideAppFiles,
@@ -25,13 +20,13 @@ class HiddenFilesTest extends TestCase
         $this->container->set('hidden_files_list', $hiddenFilesList);
         $this->container->set('hide_app_files', $hideAppFiles);
 
-        $hiddenFiles = HiddenFiles::fromContainer($this->container);
+        $hiddenFiles = HiddenFiles::fromConfig($this->config);
 
         $this->assertInstanceOf(Collection::class, $hiddenFiles);
         $this->assertEquals($expected, $hiddenFiles->values()->toArray());
     }
 
-    #[Test]
+    /** @test */
     public function it_can_not_be_instantiated_via_the_static_make_method(): void
     {
         $this->expectException(BadMethodCallException::class);

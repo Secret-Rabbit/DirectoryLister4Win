@@ -1,10 +1,7 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Controllers;
 
-use DI\Container;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
@@ -14,18 +11,19 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SearchController
 {
+    /** Create a new SearchHandler object. */
     public function __construct(
-        private Container $container,
         private Finder $finder,
         private Twig $view,
         private TranslatorInterface $translator
     ) {}
 
+    /** Invoke the SearchHandler. */
     public function __invoke(Request $request, Response $response): ResponseInterface
     {
         $search = $request->getQueryParams()['search'];
 
-        $files = $this->finder->in($this->container->call('full_path', ['path' => '.']))->name(
+        $files = $this->finder->in('.')->name(
             $search ? sprintf('/(?:.*)%s(?:.*)/i', preg_quote($search, '/')) : ''
         );
 

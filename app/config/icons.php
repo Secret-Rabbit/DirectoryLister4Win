@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 return [
     /**
      * Array of icon definitions where the array key is the file extension
@@ -68,7 +66,6 @@ return [
         'mov' => 'fas fa-video',
         'mp3' => 'fas fa-music',
         'mp4' => 'fas fa-video',
-        'm4a' => 'fas fa-music',
         'mpa' => 'fas fa-music',
         'mpg' => 'fas fa-video',
         'msg' => 'fas fa-envelope',

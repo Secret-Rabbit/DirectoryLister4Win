@@ -1,24 +1,26 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Tests\Controllers;
 
 use App\Controllers\SearchController;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
+use Slim\Views\Twig;
+use Symfony\Component\Finder\Finder;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Tests\TestCase;
 
-#[CoversClass(SearchController::class)]
+/** @covers \App\Controllers\SearchController */
 class SearchControllerTest extends TestCase
 {
-    #[Test]
-    public function it_returns_a_successful_response_for_a_search_request(): void
+    public function test_it_returns_a_successful_response_for_a_search_request(): void
     {
-        $handler = $this->container->get(SearchController::class);
+        $handler = new SearchController(
+            new Finder,
+            $this->container->get(Twig::class),
+            $this->container->get(TranslatorInterface::class)
+        );
 
         $request = $this->createMock(Request::class);
         $request->method('getQueryParams')->willReturn(['search' => 'charlie']);
@@ -31,10 +33,13 @@ class SearchControllerTest extends TestCase
         $this->assertStringNotContainsString('No results found', (string) $response->getBody());
     }
 
-    #[Test]
-    public function it_returns_no_results_found_when_there_are_no_results(): void
+    public function test_it_returns_no_results_found_when_there_are_no_results(): void
     {
-        $handler = $this->container->get(SearchController::class);
+        $handler = new SearchController(
+            new Finder,
+            $this->container->get(Twig::class),
+            $this->container->get(TranslatorInterface::class)
+        );
 
         $request = $this->createMock(Request::class);
         $request->method('getQueryParams')->willReturn(['search' => 'test search; please ignore']);
@@ -47,10 +52,13 @@ class SearchControllerTest extends TestCase
         $this->assertStringContainsString('No results found', (string) $response->getBody());
     }
 
-    #[Test]
-    public function it_returns_no_results_found_for_a_blank_search(): void
+    public function test_it_returns_no_results_found_for_a_blank_search(): void
     {
-        $handler = $this->container->get(SearchController::class);
+        $handler = new SearchController(
+            new Finder,
+            $this->container->get(Twig::class),
+            $this->container->get(TranslatorInterface::class)
+        );
 
         $request = $this->createMock(Request::class);
         $request->method('getQueryParams')->willReturn(['search' => '']);

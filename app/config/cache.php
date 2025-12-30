@@ -1,9 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
-use DI\Container;
-
+use App\Config;
 use function DI\env;
 use function DI\value;
 
@@ -13,7 +10,7 @@ return [
      * the cache across requests. Additional driver-specific options may require
      * configuration below.
      *
-     * Possible values: apcu, array, file, memcached, redis, php-file, valkey
+     * Possible values: apcu, array, file, memcached, redis, php-file
      *
      * Default value: 'file'
      */
@@ -71,10 +68,10 @@ return [
      *
      * Default value: Connects to a server at localhost:11211
      */
-    'memcached_config' => value(function (Memcached $memcached, Container $container): void {
+    'memcached_config' => value(function (Memcached $memcached, Config $config): void {
         $memcached->addServer(
-            (string) $container->get('memcached_host'),
-            (int) $container->get('memcached_port')
+            $config->get('memcached_host'),
+            $config->get('memcached_port')
         );
     }),
 
@@ -104,10 +101,10 @@ return [
      *
      * Default value: Connects to a server at localhost:6379
      */
-    'redis_config' => DI\value(function (Redis $redis, Container $container): void {
+    'redis_config' => DI\value(function (Redis $redis, Config $config): void {
         $redis->pconnect(
-            (string) $container->get('redis_host'),
-            (int) $container->get('redis_port')
+            $config->get('redis_host'),
+            $config->get('redis_port')
         );
     }),
 

@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Controllers;
 
 use App\CallbackStream;
+use App\Config;
 use App\Support\Str;
 use DateTime;
-use DI\Attribute\Inject;
-use DI\Container;
+use Exception;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use Slim\Psr7\Request;
@@ -17,29 +15,28 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use ZipStream\CompressionMethod;
-use ZipStream\Exception as ZipStreamException;
 use ZipStream\OperationMode;
 use ZipStream\ZipStream;
 
 class ZipController
 {
-    #[Inject('zip_downloads')]
-    private bool $zipDownloads;
-
-    #[Inject('zip_compress')]
-    private bool $zipCompress;
-
+    /** Create a new ZipHandler object. */
     public function __construct(
-        private Container $container,
+        private Config $config,
         private Finder $finder,
         private TranslatorInterface $translator
     ) {}
 
+    /** Invoke the ZipHandler.
+     * @throws \ZipStream\Exception\FileNotFoundException
+     * @throws \ZipStream\Exception\FileNotReadableException
+     * @throws Exception
+     */
     public function __invoke(Request $request, Response $response): ResponseInterface
     {
-        $path = $this->container->call('full_path', ['path' => $request->getQueryParams()['zip']]);
+        $path = $request->getQueryParams()['zip'];
 
-        if (! $this->zipDownloads || ! is_dir($path)) {
+        if (! $this->config->get('zip_downloads') || ! is_dir($path)) {
             return $response->withStatus(404, $this->translator->trans('error.file_not_found'));
         }
 
@@ -53,29 +50,28 @@ class ZipController
 
         $files = $this->finder->in($path)->files();
 
-        try {
-            $zip = $this->createZip($path, $files);
-        } catch (ZipStreamException) {
-            return $response->withStatus(500, $this->translator->trans('error.unexpected'));
-        }
-
+        $zip = $this->createZip($path, $files);
         $size = $zip->finish();
 
-        return $response->withHeader('Content-Length', (string) $size)->withBody(
-            new CallbackStream(static function () use ($zip): void {
+        $response = $this->augmentHeadersWithEstimatedSize($response, $size)->withBody(
+            new CallbackStream(function () use ($zip) {
                 $zip->executeSimulation();
             })
         );
+
+        return $response;
     }
 
     /**
      * Create a zip stream from a directory.
      *
-     * @throws \ZipStream\Exception
+     * @throws \ZipStream\Exception\FileNotFoundException
+     * @throws \ZipStream\Exception\FileNotReadableException
+     * @throws Exception
      */
-    private function createZip(string $path, Finder $files): ZipStream
+    protected function createZip(string $path, Finder $files): ZipStream
     {
-        $compressionMethod = $this->zipCompress ? CompressionMethod::DEFLATE : CompressionMethod::STORE;
+        $compressionMethod = $this->config->get('zip_compress') ? CompressionMethod::DEFLATE : CompressionMethod::STORE;
 
         $zip = new ZipStream(
             sendHttpHeaders: false,
@@ -102,8 +98,15 @@ class ZipController
         return $zip;
     }
 
+    protected function augmentHeadersWithEstimatedSize(Response $response, int $size): Response
+    {
+        $response = $response->withHeader('Content-Length', (string) $size);
+
+        return $response;
+    }
+
     /** Return the path to a file with the preceding root path stripped. */
-    private function stripPath(SplFileInfo $file, string $path): string
+    protected function stripPath(SplFileInfo $file, string $path): string
     {
         $pattern = sprintf('/^%s%s?/', preg_quote($path, '/'), preg_quote(DIRECTORY_SEPARATOR, '/'));
 
@@ -111,9 +114,9 @@ class ZipController
     }
 
     /** Generate the file name for a path. */
-    private function generateFileName(string $path): string
+    protected function generateFileName(string $path): string
     {
-        $filename = (string) Str::explode($path, DIRECTORY_SEPARATOR)->last();
+        $filename = Str::explode($path, DIRECTORY_SEPARATOR)->last();
 
         return $filename == '.' ? 'Home' : $filename;
     }

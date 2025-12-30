@@ -1,12 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Controllers;
 
-use App\Actions\IsHidden;
-use DI\Attribute\Inject;
-use DI\Container;
+use App\Config;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Request;
@@ -18,31 +14,22 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DirectoryController
 {
-    #[Inject('display_readmes')]
-    private string $displayReadmes;
-
+    /** Create a new IndexController object. */
     public function __construct(
-        private Container $container,
+        private Config $config,
         private Finder $finder,
         private Twig $view,
-        private TranslatorInterface $translator,
-        private IsHidden $isHidden,
+        private TranslatorInterface $translator
     ) {}
 
+    /** Invoke the IndexController. */
     public function __invoke(Request $request, Response $response): ResponseInterface
     {
-        $relativePath = mb_rtrim($request->getQueryParams()['dir'] ?? '.', '/');
-        $fullPath = $this->container->call('full_path', ['path' => $relativePath]);
-
-        if ($this->isHidden->path($fullPath)) {
-            return $this->view->render($response->withStatus(404), 'error.twig', [
-                'message' => $this->translator->trans('error.directory_not_found'),
-            ]);
-        }
+        $path = $request->getQueryParams()['dir'] ?? '.';
 
         try {
-            $files = $this->finder->in($fullPath)->depth(0);
-        } catch (Exception) {
+            $files = $this->finder->in($path)->depth(0);
+        } catch (Exception $exception) {
             return $this->view->render($response->withStatus(404), 'error.twig', [
                 'message' => $this->translator->trans('error.directory_not_found'),
             ]);
@@ -50,26 +37,26 @@ class DirectoryController
 
         return $this->view->render($response, 'index.twig', [
             'files' => $files,
-            'path' => $relativePath,
+            'path' => $path,
             'readme' => $this->readme($files),
-            'title' => $relativePath == '.' ? 'Home' : $relativePath,
+            'title' => $path == '.' ? 'Home' : $path,
         ]);
     }
 
     /** Return the README file within a finder object. */
-    private function readme(Finder $files): ?SplFileInfo
+    protected function readme(Finder $files): ?SplFileInfo
     {
-        if (! filter_var($this->displayReadmes, FILTER_VALIDATE_BOOL)) {
+        if (! $this->config->get('display_readmes')) {
             return null;
         }
 
         $readmes = (clone $files)->name('/^README(?:\..+)?$/i');
 
-        $readmes->filter(
-            static fn (SplFileInfo $file): bool => (bool) preg_match('/text\/.+/', (string) mime_content_type($file->getPathname()))
-        )->sort(
-            static fn (SplFileInfo $file1, SplFileInfo $file2): int => $file1->getExtension() <=> $file2->getExtension()
-        );
+        $readmes->filter(static function (SplFileInfo $file) {
+            return (bool) preg_match('/text\/.+/', (string) mime_content_type($file->getPathname()));
+        })->sort(static function (SplFileInfo $file1, SplFileInfo $file2) {
+            return $file1->getExtension() <=> $file2->getExtension();
+        });
 
         if (! $readmes->hasResults()) {
             return null;

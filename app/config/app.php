@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 use function DI\env;
 
 return [
@@ -63,15 +61,6 @@ return [
     'readmes_first' => env('READMES_FIRST', false),
 
     /**
-     * Comma separated list of file patterns to be directly linked. Directly
-     * linked files will not be served by Directory Lister but handled by the
-     * web server directly. This setting has no effect when FILES_PATH is set.
-     *
-     * Default value: null
-     */
-    'direct_links' => env('DIRECT_LINKS', null),
-
-    /**
      * Enable downloading of directories as a zip archive.
      *
      * Default value: true
@@ -85,6 +74,32 @@ return [
      * Default value: false
      */
     'zip_compress' => env('ZIP_COMPRESS', false),
+
+    /**
+     * DEPRECATED: Will be removed in a future release.
+     *
+     * Your Google analytics tracking ID.
+     *
+     * Expected format: 'UA-123456789-0'
+     * Default value: false
+     */
+    'google_analytics_id' => env('GOOGLE_ANALYTICS_ID', false),
+
+    /**
+     * DEPRECATED: Will be removed in a future release.
+     *
+     * Your Matomo analytics URL.
+     *
+     *  Default value: false
+     */
+    'matomo_analytics_url' => env('MATOMO_ANALYTICS_URL', false),
+
+    /**
+     * Your Matomo analytics site ID.
+     *
+     * Default value: false
+     */
+    'matomo_analytics_site_id' => env('MATOMO_ANALYTICS_SITE_ID', false),
 
     /**
      * Sorting order of files and folders.

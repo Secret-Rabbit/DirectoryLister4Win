@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
-    bootstrap="app/vendor/autoload.php" colors="true" cacheDirectory=".cache/phpunit" requireCoverageMetadata="true"
-    xsi:noNamespaceSchemaLocation="app/vendor/phpunit/phpunit/phpunit.xsd"
+    bootstrap="app/vendor/autoload.php" colors="true" forceCoversAnnotation="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="app/vendor/phpunit/phpunit/phpunit.xsd"
 >
-    <testsuites>
-        <testsuite name="Directory Lister Test Suite">
-            <directory suffix="Test.php">tests/</directory>
-        </testsuite>
-    </testsuites>
-
-    <source>
+    <coverage cacheDirectory=".coverage-cache" processUncoveredFiles="true">
         <include>
             <directory suffix=".php">app/</directory>
         </include>
@@ -20,9 +14,15 @@
             <directory>app/config</directory>
             <directory>app/vendor</directory>
         </exclude>
-    </source>
+    </coverage>
 
-    <php>
-        <server name="HTTP_HOST" value="localhost"/>
-    </php>
+    <testsuites>
+        <testsuite name="Directory Lister Test Suite">
+            <directory suffix="Test.php">tests/</directory>
+        </testsuite>
+    </testsuites>
+
+    <listeners>
+        <listener class="JohnKary\PHPUnit\Listener\SpeedTrapListener" />
+    </listeners>
 </phpunit>
