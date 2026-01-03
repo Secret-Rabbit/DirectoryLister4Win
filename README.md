@@ -1,85 +1,76 @@
-<p align="center">
-    <img src="directory-lister.svg" alt="Directory Lister" width="66%">
-</p>
-
-<p align="center">
-    <a href="https://github.com/DirectoryLister/DirectoryLister/discussions"><img src="https://img.shields.io/badge/Join_the-Community-7b16ff.svg?style=for-the-badge" alt="Join our Community"></a>
-    <a href="https://github.com/users/PHLAK/sponsorship"><img src="https://img.shields.io/badge/Become_a-Sponsor-cc4195.svg?style=for-the-badge" alt="Become a Sponsor"></a>
-    <a href="https://paypal.me/ChrisKankiewicz"><img src="https://img.shields.io/badge/Make_a-Donation-006bb6.svg?style=for-the-badge" alt="One-time Donation"></a>
-    <br>
-    <img alt="Packagist PHP Version Support" src="https://img.shields.io/packagist/php-v/phlak/directory-lister?style=flat-square">
-    <a href="https://github.com/DirectoryLister/DirectoryLister/blob/master/LICENSE"><img src="https://img.shields.io/github/license/DirectoryLister/DirectoryLister?style=flat-square" alt="License"></a>
-    <a href="https://github.com/DirectoryLister/DirectoryLister/actions" alt="Build Status"><img src="https://img.shields.io/github/checks-status/DirectoryLister/DirectoryLister/master?style=flat-square"></a>
-</p>
-
----
-
-Directory Lister is the easiest way to expose the contents of any web-accessible
-folder for browsing and sharing. With a zero configuration, drag-and-drop
-installation you'll be up and running in less than a minute.
-
-![Screenshot](screenshot.png)
-
-Directory Lister is created and maintained by
-[Chris Kankiewicz](https://www.chriskankiewicz.com)
-([@PHLAK.dev](https://bsky.app/profile/phlak.dev)) with help through
-[community contributions](https://github.com/DirectoryLister/DirectoryLister/graphs/contributors).
-
-Features
---------
-
-  - **Simple installation** allows you to be up and running in less than a minute.
-  - **Light and dark themes** to suit your professional needs or personal style.
-  - **Custom sort ordering** gives you control of the ordering of your files/folders.
-  - **File search** helps you locate the files you need quickly and efficiently.
-  - **File hashes** instill confidence when downloading files through verification.
-  - **Readme rendering** allows exposing the contents of READMEs directly on the page.
-  - **Zip downloads** for fetching an entire directory of files in a single action.
-  - **Multi-lingual support** brings Directory Lister to the language of your choice.
+# 🇬🇧 English
+DirectoryLister4Win is a fork of Directory Lister 📂 v4.4.0, compatible with the Windows file system.
 
 Requirements
 ------------
-
-  - Directory Lister requires [PHP](https://www.php.net/) >= 8.0
-    - The [Zip](https://www.php.net/manual/en/book.zip.php) and [Multibyte String](https://www.php.net/manual/en/book.mbstring.php) extension is required for zip downloads
-    - The [DOM](https://www.php.net/en/dom) and [Fileinfo](https://www.php.net/manual/en/book.fileinfo.php) extensions are required for README rendering
+  - Directory Lister requires [PHP](https://windows.php.net/download) >= 8.0.
+  - PHP extensions:
+    - [Zip](https://www.php.net/manual/en/book.zip.php);
+    - [DOM](https://www.php.net/en/dom);
+    - [Fileinfo](https://www.php.net/manual/en/book.fileinfo.php);
+    - [Multibyte String](https://www.php.net/manual/en/book.mbstring.php).
 
 Installation
 ------------
-
-  1. [Download Directory Lister](https://github.com/Secret-Rabbit/DirectoryLister4Win/archive/refs/heads/master.zip)
-  2. Extract the zip/tar archive
-  3. Copy extracted files/folders to your web server
+  1. [Install](https://www.php.net/manual/en/install.windows.php) a web-server and php bundle (for example [Apache + PHP](https://www.php.net/manual/en/install.windows.apache2.php), or [IIS + PHP](https://www.php.net/manual/en/install.windows.iis.php)).
+  2. Edit the `php.ini` file by uncommenting the values below by removing the semi colon symbol `;`. Line numbers depend on version (line numbers as of PHP 8.4.14):
+```ini
+extension=fileinfo      # Line 922
+extension=mbstring      # Line 928
+extension=zip           # Line 951
+```
+  3. Set default document to `index.php`.
+  4. [Download Directory Lister](https://github.com/Secret-Rabbit/DirectoryLister4Win/archive/refs/heads/master.zip).
+  5. Extract the zip archive.
+  6. Copy extracted files/folders to your web server.
 
 Configuration
 -------------
+  1. Copy `.env.example` to `.env`.
+  2. Edit the configuration values in `.env`.
 
-  1. Copy `.env.example` to `.env`
-  2. Edit the configuration values in `.env`
-
-See the [Configuration Documentation](https://docs.directorylister.com/configuration) for more information.
-
-Sponsors
---------
-
-Love Directory Lister? [Sponsor development](https://github.com/sponsors/PHLAK)
-and have your name or logo featured here!
-
-Changelog
----------
-
-A list of changes can be found on the [GitHub Releases](https://github.com/DirectoryLister/DirectoryLister/releases) page.
-
-Troubleshooting
----------------
-
-See the [Help & Support](https://docs.directorylister.com/help-and-support) section of the documentation for troubleshooting instructions.
-
-For general help and support join our [GitHub Discussion](https://github.com/DirectoryLister/DirectoryLister/discussions) or reach out on [Bluesky](https://bsky.app/profile/directorylister.com).
-
-Please report bugs to the [GitHub Issue Tracker](https://github.com/DirectoryLister/DirectoryLister/issues).
+See the [Configuration Documentation](https://docs.directorylister.com/configuration) for more information. __Warning__: The functions added in version 5 of Directory Lister will not work.
 
 Copyright
 ---------
-
 This project is licensed under the [MIT License](https://github.com/DirectoryLister/DirectoryLister/blob/master/LICENSE).
+
+
+# 🇷🇺 Русский
+DirectoryLister4Win — это форк Directory Lister 📂 v4.4.0, совместимый с файловой системой Windows.
+
+
+Требования
+----------
+  - Для работы Directory Lister требуется [PHP](https://windows.php.net/download) версии 8.0 и выше.
+  - Необходимые расширения PHP:
+    - [Zip](https://www.php.net/manual/en/book.zip.php);
+    - [DOM](https://www.php.net/en/dom);
+    - [Fileinfo](https://www.php.net/manual/en/book.fileinfo.php);
+    - [Multibyte String](https://www.php.net/manual/en/book.mbstring.php).
+
+Установка
+---------
+  1. [Установите](https://www.php.net/manual/en/install.windows.php) веб‑сервер и комплект PHP (например, [Apache + PHP](https://www.php.net/manual/en/install.windows.apache2.php) или [IIS + PHP](https://www.php.net/manual/en/install.windows.iis.php)).
+  2. Отредактируйте файл `php.ini`, раскомментировав строки ниже — удалите точку с запятой `;` в начале строки. Номера строк зависят от версии PHP (номера строк приведены для PHP 8.4.14):
+```ini
+extension=fileinfo      # Строка 922
+extension=mbstring      # Строка 928
+extension=zip           # Строка 951
+```
+  3. Установите `index.php` как документ по умолчанию.
+  4. [Скачайте Directory Lister](https://github.com/Secret-Rabbit/DirectoryLister4Win/archive/refs/heads/master.zip).
+  5. Распакуйте ZIP‑архив.
+  6. Скопируйте распакованные файлы и папки на ваш веб‑сервер.
+
+Настройка
+------------
+  1. Скопируйте `.env.example` как `.env`.
+  2. Отредактируйте параметры в `.env`.
+
+См. [документацию по конфигурации](https://docs.directorylister.com/configuration) для получения дополнительной информации.  
+__Предупреждение__: функции, добавленные в 5 версии Directory Lister, не работают.
+
+Авторские права
+---------------
+Этот проект распространяется под лицензией [MIT](https://github.com/DirectoryLister/DirectoryLister/blob/master/LICENSE).

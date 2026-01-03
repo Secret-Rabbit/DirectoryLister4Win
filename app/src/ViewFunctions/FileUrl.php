@@ -18,6 +18,7 @@ class FileUrl extends Url
         if ($path === '') {
             return '';
         }
+        $path = str_replace('\\', '/', $path);
 
         return sprintf('?dir=%s', $this->escape($path));
     }

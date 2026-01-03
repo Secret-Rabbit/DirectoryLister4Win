@@ -28,10 +28,14 @@ class Url extends ViewFunction
     /** Escape URL characters in path segments. */
     protected function escape(string $path): string
     {
-        return Str::explode($path, $this->directorySeparator)->map(
+        /** Always normalize slashes for web */
+        $path = str_replace('\\', '/', $path);
+
+        /** Splitting by web separator */
+        return Str::explode($path, '/')->map(
             static function (string $segment): string {
                 return rawurlencode($segment);
             }
-        )->implode($this->directorySeparator);
+        )->implode('/');
     }
 }
