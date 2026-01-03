@@ -44,14 +44,14 @@ DirectoryLister4Win — это форк Directory Lister 📂 v4.4.0, совме
 ----------
   - Для работы Directory Lister требуется [PHP](https://windows.php.net/download) версии 8.0 и выше.
   - Необходимые расширения PHP:
-    - [Zip](https://www.php.net/manual/en/book.zip.php);
+    - [Zip](https://www.php.net/manual/ru/book.zip.php);
     - [DOM](https://www.php.net/en/dom);
-    - [Fileinfo](https://www.php.net/manual/en/book.fileinfo.php);
-    - [Multibyte String](https://www.php.net/manual/en/book.mbstring.php).
+    - [Fileinfo](https://www.php.net/manual/ru/book.fileinfo.php);
+    - [Multibyte String](https://www.php.net/manual/ru/book.mbstring.php).
 
 Установка
 ---------
-  1. [Установите](https://www.php.net/manual/en/install.windows.php) веб‑сервер и комплект PHP (например, [Apache + PHP](https://www.php.net/manual/en/install.windows.apache2.php) или [IIS + PHP](https://www.php.net/manual/en/install.windows.iis.php)).
+  1. [Установите](https://www.php.net/manual/ru/install.windows.php) веб‑сервер и комплект PHP (например, [Apache + PHP](https://www.php.net/manual/ru/install.windows.apache2.php) или [IIS + PHP](https://www.php.net/manual/ru/install.windows.iis.php)).
   2. Отредактируйте файл `php.ini`, раскомментировав строки ниже — удалите точку с запятой `;` в начале строки. Номера строк зависят от версии PHP (номера строк приведены для PHP 8.4.14):
 ```ini
 extension=fileinfo      # Строка 922
